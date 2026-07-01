@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Cahier du Distillateur — Élaborez votre whisky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --peat:#181310;
+  --peat-2:#221b16;
+  --copper:#b8752f;
+  --copper-light:#d99a52;
+  --amber:#d9a441;
+  --amber-deep:#a97a1f;
+  --barley:#efe2c0;
+  --parchment:#f4ecd9;
+  --parchment-dim:#e8dcc0;
+  --oak:#5c3d2e;
+  --ember:#c4472a;
+  --verdigris:#6f9271;
+  --ink:#241a12;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse at 20% -10%, #2a2016 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 0%, #241a10 0%, transparent 50%),
+    var(--peat);
+  color:var(--parchment);
+  font-family:'Source Serif 4', serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--amber);color:var(--ink);}
+.mono{font-family:'JetBrains Mono', monospace;}
+.display{font-family:'Fraunces', serif;}
+
+a, button{font-family:inherit;}
+
+/* ---------- Layout shell ---------- */
+.app{
+  max-width:1180px;
+  margin:0 auto;
+  padding:28px 20px 80px;
+}
+.masthead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:16px;
+  border-bottom:1px solid rgba(239,226,192,.18);
+  padding-bottom:18px;
+  margin-bottom:34px;
+  flex-wrap:wrap;
+}
+.masthead h1{
+  font-family:'Fraunces', serif;
+  font-weight:700;
+  font-optical-sizing:auto;
+  font-size:clamp(1.5rem, 2.6vw, 2.15rem);
+  letter-spacing:.01em;
+  margin:0;
+  color:var(--barley);
+}
+.masthead .sub{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.72rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+  margin-top:4px;
+}
+.masthead .learner{
+  text-align:right;
+  font-size:.85rem;
+  color:var(--parchment-dim);
+}
+.masthead .learner b{color:var(--amber);}
+
+/* ---------- Grid: still panel + content ---------- */
+.grid{
+  display:grid;
+  grid-template-columns: 230px 1fr;
+  gap:36px;
+  align-items:start;
+}
+@media (max-width: 860px){
+  .grid{grid-template-columns:1fr;}
+  .still-panel{order:2;}
+}
+
+/* ---------- Still (signature element) ---------- */
+.still-panel{
+  position:sticky;
+  top:24px;
+  background:linear-gradient(180deg, #1f1712, #171210);
+  border:1px solid rgba(184,117,47,.35);
+  border-radius:6px;
+  padding:18px 14px 20px;
+  box-shadow:var(--shadow);
+}
+.still-panel .label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.65rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+  text-align:center;
+  margin-bottom:10px;
+}
+.still-svg-wrap{ position:relative; }
+.gauge{
+  margin-top:14px;
+  font-family:'JetBrains Mono', monospace;
+}
+.gauge-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:.68rem;
+  color:var(--parchment-dim);
+  margin-bottom:4px;
+}
+.gauge-bar{
+  height:8px;
+  border-radius:4px;
+  background:rgba(239,226,192,.12);
+  overflow:hidden;
+  border:1px solid rgba(239,226,192,.1);
+}
+.gauge-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--amber-deep), var(--amber), var(--copper-light));
+  width:0%;
+  transition:width .5s ease;
+}
+.step-dots{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  margin-top:16px;
+}
+.step-dot{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.72rem;
+  color:rgba(239,226,192,.4);
+  font-family:'JetBrains Mono', monospace;
+}
+.step-dot .pt{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(239,226,192,.2);
+  flex:none;
+}
+.step-dot.done{color:var(--barley);}
+.step-dot.done .pt{background:var(--verdigris);}
+.step-dot.current{color:var(--amber);}
+.step-dot.current .pt{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+
+/* ---------- Cards ---------- */
+.card{
+  background:linear-gradient(180deg, rgba(244,236,217,.03), rgba(244,236,217,.015));
+  border:1px solid rgba(239,226,192,.14);
+  border-radius:8px;
+  padding:30px clamp(18px,4vw,42px);
+  box-shadow:var(--shadow);
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- Start screen ---------- */
+.start .display{font-size:clamp(1.6rem,3.4vw,2.4rem);}
+.start p.lede{
+  color:var(--parchment-dim);
+  font-size:1.02rem;
+  line-height:1.65;
+  max-width:60ch;
+}
+.field{margin-top:22px;max-width:420px;}
+.field.wide{max-width:none;}
+.field label{
+  display:block;
+  font-family:'JetBrains Mono', monospace;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+  margin-bottom:6px;
+}
+.field input[type=text]{
+  width:100%;
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(239,226,192,.25);
+  border-radius:4px;
+  padding:11px 12px;
+  color:var(--barley);
+  font-family:'Source Serif 4', serif;
+  font-size:1rem;
+}
+.field input[type=text]:focus{outline:2px solid var(--amber); outline-offset:1px;}
+
+.choice-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px;
+  margin-top:22px;
+}
+.choice-card{
+  text-align:left;
+  border:1px solid rgba(239,226,192,.22);
+  background:rgba(0,0,0,.2);
+  border-radius:6px;
+  padding:18px 18px 16px;
+  cursor:pointer;
+  color:inherit;
+  transition:border-color .2s, background .2s, transform .15s;
+  display:flex;
+  flex-direction:column;
+}
+.choice-card:hover{border-color:var(--amber); transform:translateY(-2px);}
+.choice-card.selected{border-color:var(--amber); background:rgba(217,164,65,.1);}
+.choice-card h3{
+  font-family:'Fraunces', serif;
+  font-size:1.1rem;
+  margin:0 0 6px;
+  color:var(--amber);
+}
+.choice-card .tagline{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.64rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+  margin-bottom:8px;
+}
+.choice-card p{font-size:.84rem;color:var(--parchment-dim);margin:0;line-height:1.5;}
+
+.info-note{
+  margin-top:22px;
+  border:1px solid rgba(239,226,192,.18);
+  border-left:3px solid var(--copper-light);
+  background:rgba(184,117,47,.08);
+  border-radius:6px;
+  padding:16px 18px;
+  font-size:.88rem;
+  line-height:1.55;
+  color:var(--parchment-dim);
+  max-width:70ch;
+}
+.info-note b{color:var(--amber);}
+
+.btn{
+  font-family:'JetBrains Mono', monospace;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-size:.76rem;
+  background:var(--amber);
+  color:var(--ink);
+  border:none;
+  padding:13px 26px;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.btn:hover:not(:disabled){background:var(--copper-light); transform:translateY(-1px);}
+.btn:disabled{opacity:.35; cursor:not-allowed;}
+.btn.ghost{
+  background:transparent;
+  color:var(--barley);
+  border:1px solid rgba(239,226,192,.35);
+}
+.btn.ghost:hover{border-color:var(--amber); color:var(--amber);}
+
+/* ---------- Step screen ---------- */
+.eyebrow{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+}
+.step-title{
+  font-family:'Fraunces', serif;
+  font-weight:700;
+  font-size:clamp(1.35rem,2.6vw,1.85rem);
+  margin:6px 0 10px;
+  color:var(--barley);
+}
+.step-prompt{
+  color:var(--parchment-dim);
+  font-size:.98rem;
+  line-height:1.6;
+  max-width:70ch;
+  margin-bottom:22px;
+}
+.options{
+  display:grid;
+  gap:12px;
+}
+.opt{
+  text-align:left;
+  border:1px solid rgba(239,226,192,.18);
+  background:rgba(0,0,0,.18);
+  border-radius:6px;
+  padding:15px 18px;
+  cursor:pointer;
+  color:inherit;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  transition:border-color .18s, background .18s;
+}
+.opt:hover{border-color:var(--copper-light);}
+.opt .letter{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.78rem;
+  color:var(--copper-light);
+  border:1px solid rgba(184,117,47,.4);
+  border-radius:50%;
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  flex:none;
+  margin-top:2px;
+}
+.opt .txt b{display:block;color:var(--barley);font-size:1rem;margin-bottom:3px;}
+.opt .txt span{font-size:.85rem;color:var(--parchment-dim);line-height:1.5;}
+.opt.locked{cursor:default;}
+.opt.correct{border-color:var(--verdigris); background:rgba(111,146,113,.13);}
+.opt.correct .letter{border-color:var(--verdigris);color:var(--verdigris);}
+.opt.partial{border-color:var(--amber); background:rgba(217,164,65,.1);}
+.opt.partial .letter{border-color:var(--amber);color:var(--amber);}
+.opt.wrong{border-color:var(--ember); background:rgba(196,71,42,.1); opacity:.85;}
+.opt.wrong .letter{border-color:var(--ember);color:var(--ember);}
+.opt.dim{opacity:.45;}
+
+.feedback{
+  margin-top:20px;
+  padding:16px 18px;
+  border-radius:6px;
+  border-left:3px solid var(--amber);
+  background:rgba(217,164,65,.07);
+  font-size:.92rem;
+  line-height:1.6;
+}
+.feedback.tier-3{border-color:var(--verdigris); background:rgba(111,146,113,.09);}
+.feedback.tier-0{border-color:var(--ember); background:rgba(196,71,42,.08);}
+.feedback .fb-title{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+  color:var(--amber);
+}
+.feedback.tier-3 .fb-title{color:var(--verdigris);}
+.feedback.tier-0 .fb-title{color:var(--ember);}
+
+.step-footer{
+  margin-top:auto;
+  padding-top:26px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.step-score{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.78rem;
+  color:var(--parchment-dim);
+}
+.step-score b{color:var(--amber);}
+
+/* ---------- Results ---------- */
+.result-head{text-align:center;}
+.result-tier{
+  font-family:'Fraunces', serif;
+  font-weight:900;
+  font-size:clamp(1.7rem,4vw,2.6rem);
+  color:var(--amber);
+  margin:6px 0 4px;
+}
+.result-score{
+  font-family:'JetBrains Mono', monospace;
+  color:var(--parchment-dim);
+  font-size:.95rem;
+}
+.warning-banner{
+  margin:20px 0;
+  border:1px solid var(--ember);
+  background:rgba(196,71,42,.12);
+  border-radius:6px;
+  padding:14px 18px;
+  font-size:.9rem;
+  line-height:1.55;
+  color:var(--barley);
+}
+.warning-banner b{color:var(--ember);}
+
+.certificate{
+  margin-top:26px;
+  border:1px solid rgba(239,226,192,.2);
+  border-radius:8px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(217,164,65,.06), transparent 40%),
+    rgba(0,0,0,.15);
+  padding:26px clamp(16px,4vw,34px);
+}
+.certificate h3{
+  font-family:'Fraunces', serif;
+  color:var(--barley);
+  font-size:1.15rem;
+  margin:0 0 16px;
+  border-bottom:1px solid rgba(239,226,192,.15);
+  padding-bottom:10px;
+}
+.recap-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px 24px;
+}
+@media(max-width:600px){.recap-grid{grid-template-columns:1fr;}}
+.recap-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px dashed rgba(239,226,192,.12);
+  padding:8px 0;
+  font-size:.88rem;
+}
+.recap-item .k{color:var(--copper-light); font-family:'JetBrains Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;}
+.recap-item .v{color:var(--barley); text-align:right;}
+.recap-item .v.crit{color:var(--ember);}
+
+.tasting{
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px solid rgba(239,226,192,.15);
+}
+.tasting .fb-title{
+  font-family:'JetBrains Mono', monospace;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--copper-light);
+  margin-bottom:8px;
+}
+.tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{
+  border:1px solid rgba(217,164,65,.4);
+  color:var(--amber);
+  border-radius:20px;
+  padding:5px 13px;
+  font-size:.78rem;
+  font-family:'JetBrains Mono', monospace;
+}
+
+.result-actions{
+  margin-top:28px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+@media print{
+  body{background:#fff !important; color:#000 !important;}
+  .still-panel, .result-actions, .masthead .sub{display:none !important;}
+  .grid{grid-template-columns:1fr !important;}
+  .card{border:1px solid #999; box-shadow:none; background:#fff; color:#000;}
+  .certificate{border:1px solid #999;}
+  .recap-item .v, .recap-item .k, .step-title, .result-tier{color:#000 !important;}
+}
+
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="masthead">
+    <div>
+      <h1>Le Cahier du Distillateur</h1>
+      <div class="sub">Atelier whisky écossais &amp; irlandais — élaboration pas à pas</div>
+    </div>
+    <div class="learner" id="learnerTag"></div>
+  </div>
+
+  <div class="grid">
+    <!-- Signature still panel -->
+    <div class="still-panel">
+      <div class="label">Alambic</div>
+      <div class="still-svg-wrap">
+        <svg viewBox="0 0 200 320" width="100%" id="stillSvg">
+          <defs>
+            <linearGradient id="liquid" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#a97a1f"/>
+              <stop offset="100%" stop-color="#e8c268"/>
+            </linearGradient>
+            <clipPath id="bodyClip">
+              <path d="M60 60 C60 30 140 30 140 60 L150 190 C150 240 120 260 100 260 C80 260 50 240 50 190 Z"/>
+            </clipPath>
+          </defs>
+          <!-- neck -->
+          <path d="M85 10 L115 10 L110 62 L90 62 Z" fill="#2a2018" stroke="#6b4a28" stroke-width="1.5"/>
+          <!-- body outline -->
+          <path d="M60 60 C60 30 140 30 140 60 L150 190 C150 240 120 260 100 260 C80 260 50 240 50 190 Z" fill="#241a12" stroke="#8a5a2c" stroke-width="1.5"/>
+          <!-- liquid fill -->
+          <rect id="liquidFill" x="45" y="260" width="110" height="0" fill="url(#liquid)" clip-path="url(#bodyClip)"/>
+          <!-- highlight -->
+          <path d="M65 70 C65 45 95 40 95 40" stroke="rgba(255,255,255,.12)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- swan neck / lyne arm -->
+          <path d="M110 25 C150 15 165 45 158 70" stroke="#8a5a2c" stroke-width="4" fill="none" stroke-linecap="round" id="lyneArm"/>
+          <!-- base -->
+          <ellipse cx="100" cy="262" rx="52" ry="10" fill="#120d0a" stroke="#6b4a28" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="gauge">
+        <div class="gauge-row"><span>Progression</span><span id="progLabel">0%</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" id="progFill"></div></div>
+      </div>
+      <div class="gauge">
+        <div class="gauge-row"><span>Score technique</span><span id="scoreLabel">0 / 21</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" id="scoreFill" style="background:linear-gradient(90deg,#6f9271,#a9c9ab);"></div></div>
+      </div>
+      <div class="step-dots" id="stepDots"></div>
+    </div>
+
+    <!-- Main content -->
+    <div class="card" id="mainCard"></div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+
+const STYLES = {
+  scotch_single_malt: {
+    key:'scotch_single_malt', family:'scotch', label:"Single Malt Écossais", short:"Single Malt",
+    desc:"Orge maltée à 100 %, double distillation en alambic à repasse (pot still), dans une seule distillerie, minimum 3 ans en fût de chêne en Écosse."
+  },
+  scotch_single_grain: {
+    key:'scotch_single_grain', family:'scotch', label:"Single Grain Écossais", short:"Single Grain",
+    desc:"Céréales (maïs, blé…) avec une part d'orge maltée, distillé en colonne continue dans une seule distillerie. Base classique des blends."
+  },
+  scotch_blended_malt: {
+    key:'scotch_blended_malt', family:'scotch', label:"Blended Malt Écossais", short:"Blended Malt",
+    desc:"Assemblage de plusieurs Single Malts provenant de distilleries différentes. Chaque whisky assemblé respecte les règles du Single Malt : 100 % orge maltée, alambic à repasse."
+  },
+  scotch_blended: {
+    key:'scotch_blended', family:'scotch', label:"Blended Scotch Whisky", short:"Blended",
+    desc:"Assemblage d'un ou plusieurs Single Malts et d'un ou plusieurs Single Grains. Vous élaborez ici l'un des whiskies composant l'assemblage."
+  },
+  irish_pot_still: {
+    key:'irish_pot_still', family:'irish', label:"Irish Pot Still Whiskey", short:"Irish",
+    desc:"Mélange d'orge maltée et d'orge non maltée, traditionnellement triple distillation en alambic, minimum 3 ans en fût de chêne en Irlande."
+  }
+};
+
+const REGIONS = {
+  lowlands: {
+    key:'lowlands', label:"Lowlands", tagline:"Léger &amp; floral",
+    desc:"Sud de l'Écosse. Whiskies généralement légers, herbacés et floraux, historiquement souvent triple-distillés (ex. Auchentoshan), très peu ou pas tourbés.",
+    tags:["profil Lowlands : léger, herbacé, floral"]
+  },
+  highlands: {
+    key:'highlands', label:"Highlands", tagline:"Large éventail de profils",
+    desc:"La plus vaste région écossaise, aux profils très variés : du fruité léger au robuste épicé, avec un tourbage variable selon les distilleries.",
+    tags:["profil Highlands : ample, fruité à épicé"]
+  },
+  islay: {
+    key:'islay', label:"Islay", tagline:"Tourbé &amp; iodé",
+    desc:"Petite île réputée pour ses whiskies puissamment tourbés, iodés et marins (ex. Laphroaig, Lagavulin, Ardbeg).",
+    tags:["profil Islay : tourbé, iodé, marin"]
+  },
+  islands: {
+    key:'islands', label:"Les Îles (Islands)", tagline:"Marin &amp; légèrement fumé",
+    desc:"Archipels hors Islay (Skye, Jura, Orcades, Mull…) : whiskies souvent salins, avec une tourbe plus mesurée qu'à Islay.",
+    tags:["profil Islands : salin, légèrement fumé, épicé"]
+  }
+};
+const IRISH_REGION = {
+  key:'irish', label:"Irlande", tagline:"Île unique, sans sous-régions officielles",
+  desc:"Contrairement à l'Écosse, l'Irish Whiskey ne connaît pas de découpage régional réglementé : toute l'île d'Irlande (République et Irlande du Nord) constitue une aire géographique unique.",
+  tags:["origine : Irlande"]
+};
+
+// points / critical / fb keyed by the 5 style ids.
+const STEPS = [
+{
+  id:'grain', eyebrow:"Étape 1 · Matière première",
+  title:"Choix de la céréale",
+  prompt:"La céréale de base détermine la catégorie légale du whisky que vous élaborez. Choisissez la céréale (ou le mélange de céréales) qui entre dans votre empâtage.",
+  options:[
+    { id:'a', label:"Orge maltée à 100 %", detail:"Seule céréale utilisée, entièrement maltée.",
+      points:{scotch_single_malt:3, scotch_single_grain:1, scotch_blended_malt:3, scotch_blended:3, irish_pot_still:2},
+      critical:{scotch_single_malt:false, scotch_single_grain:false, scotch_blended_malt:false, scotch_blended:false, irish_pot_still:false},
+      fb:{
+        scotch_single_malt:"C'est la règle absolue du Single Malt écossais : le Scotch Whisky Regulations impose 100 % d'orge maltée pour revendiquer l'appellation « Single Malt ». Choix exemplaire.",
+        scotch_single_grain:"Légal mais atypique : un Single Grain peut techniquement reposer sur de l'orge maltée seule, mais l'immense majorité des distilleries utilisent du maïs ou du blé pour se différencier du malt whisky. Choix peu représentatif du style.",
+        scotch_blended_malt:"Choix exemplaire : un Blended Malt est un assemblage de Single Malts, chacun devant respecter la règle des 100 % orge maltée. Base parfaitement conforme.",
+        scotch_blended:"Choix conforme : vous élaborez ici la composante « malt » de votre futur assemblage. Un Blended Scotch Whisky intègre justement ce type de whisky à 100 % orge maltée.",
+        irish_pot_still:"Correct et légal, mais ce choix produit un « Irish Single Malt », pas un « Pot Still ». Pour la typicité Pot Still, il faut associer orge maltée et orge non maltée."
+      } },
+    { id:'b', label:"Orge maltée + orge non maltée (min. 30 % chacune)", detail:"Mélange caractéristique du style pot still irlandais.",
+      points:{scotch_single_malt:0, scotch_single_grain:0, scotch_blended_malt:0, scotch_blended:1, irish_pot_still:3},
+      critical:{scotch_single_malt:true, scotch_single_grain:true, scotch_blended_malt:true, scotch_blended:false, irish_pot_still:false},
+      fb:{
+        scotch_single_malt:"Non conforme : l'ajout d'orge non maltée est interdit dans un Single Malt écossais, qui exige 100 % d'orge maltée. Ce whisky ne pourrait pas porter la mention « Single Malt ».",
+        scotch_single_grain:"Non conforme : ce mélange d'orge maltée et non maltée définit le style irlandais pot still, pas le Single Grain écossais qui repose sur du maïs ou du blé avec un peu d'orge maltée.",
+        scotch_blended_malt:"Non conforme : un Blended Malt est un assemblage de Single Malts, tous devant être élaborés à 100 % orge maltée. L'orge non maltée n'a pas sa place ici.",
+        scotch_blended:"Choix atypique pour un Blended Scotch Whisky : ce mélange orge maltée/non maltée est la signature irlandaise, rarement utilisé dans la tradition écossaise des blends.",
+        irish_pot_still:"C'est la signature du Pot Still Irish Whiskey : le cahier des charges impose au moins 30 % d'orge maltée et 30 % d'orge non maltée. L'orge crue apporte le grain épicé caractéristique du style."
+      } },
+    { id:'c', label:"Maïs majoritaire (avec une part d'orge maltée)", detail:"Céréale typique des whiskies de grain distillés en colonne.",
+      points:{scotch_single_malt:0, scotch_single_grain:3, scotch_blended_malt:0, scotch_blended:3, irish_pot_still:0},
+      critical:{scotch_single_malt:true, scotch_single_grain:false, scotch_blended_malt:true, scotch_blended:false, irish_pot_still:true},
+      fb:{
+        scotch_single_malt:"Le maïs est réservé au grain whisky distillé en colonne : il n'a pas sa place dans un Single Malt, qui doit être 100 % orge maltée.",
+        scotch_single_grain:"Choix typique et représentatif : le maïs (ou le blé), complété d'une part d'orge maltée pour ses enzymes, est la base classique du Single Grain, ensuite distillé en colonne continue.",
+        scotch_blended_malt:"Non conforme : un Blended Malt ne doit contenir que des Single Malts (100 % orge maltée). Le maïs relève du grain whisky, exclu de cette catégorie.",
+        scotch_blended:"Choix conforme : vous élaborez ici la composante « grain » de votre futur assemblage, typique du profil Single Grain intégré aux blends.",
+        irish_pot_still:"Le maïs sert au whiskey de grain (souvent en assemblage type blend), pas à un Pot Still qui doit reposer sur une base d'orge."
+      } },
+    { id:'d', label:"Seigle", detail:"Céréale typique des whiskies nord-américains (rye).",
+      points:{scotch_single_malt:0, scotch_single_grain:0, scotch_blended_malt:0, scotch_blended:0, irish_pot_still:0},
+      critical:{scotch_single_malt:true, scotch_single_grain:true, scotch_blended_malt:true, scotch_blended:true, irish_pot_still:true},
+      fb:{
+        scotch_single_malt:"Le seigle n'entre pas dans la tradition écossaise du Single Malt ; il caractérise plutôt le rye whiskey nord-américain.",
+        scotch_single_grain:"Le seigle n'est pas une céréale de la tradition du Single Grain écossais, généralement bâti sur maïs ou blé.",
+        scotch_blended_malt:"Le seigle n'a pas sa place ici : un Blended Malt exige des Single Malts, donc uniquement de l'orge maltée.",
+        scotch_blended:"Le seigle n'appartient pas à la tradition des blends écossais, qui reposent sur l'association malt (orge)/grain (maïs, blé).",
+        irish_pot_still:"Le seigle n'est pas une céréale du cahier des charges du Pot Still irlandais, historiquement bâti sur l'orge."
+      } }
+  ]
+},
+{
+  id:'maltage', eyebrow:"Étape 2 · Maltage",
+  title:"Choix du touraillage (séchage du malt)",
+  prompt:"Après germination, le malt vert est séché au touraille. La température et l'usage éventuel de tourbe (fumage) influencent à la fois la conservation des enzymes et le profil aromatique final. Cette étape est universelle : elle obéit aux mêmes lois physico-chimiques quel que soit le style visé.",
+  options:[
+    { id:'a', label:"Séchage à air chaud, non tourbé, < 70 °C", detail:"Profil floral, céréalier, sans fumé.",
+      points:U(3), critical:U(false),
+      fb:"Technique maîtrisée : en restant sous 70 °C, vous préservez l'activité enzymatique (diastase) indispensable à la conversion de l'amidon plus tard, à l'empâtage. Style non tourbé, très répandu." },
+    { id:'b', label:"Séchage tourbé léger (5–15 ppm phénols), < 70 °C", detail:"Note fumée discrète en fond.",
+      points:U(3), critical:U(false),
+      fb:"Bon choix technique : température maîtrisée, tourbe modérée. Vous obtiendrez une légère note fumée sans dominer le profil." },
+    { id:'c', label:"Séchage tourbé fort, style Islay (30–50+ ppm), < 70 °C", detail:"Profil iodé, fumé, médicinal.",
+      points:U(3), critical:U(false),
+      fb:"Bon choix technique : la température reste maîtrisée. Vous obtiendrez un profil puissamment tourbé, iodé et fumé, dans l'esprit d'Islay." },
+    { id:'d', label:"Séchage rapide à 100 °C et plus", detail:"Pour gagner du temps sur le touraillage.",
+      points:U(0), critical:U(true),
+      fb:"Erreur technique : au-delà de 70-75 °C, les enzymes du malt (amylases) sont dénaturées. Sans elles, l'amidon ne pourra pas être converti en sucres fermentescibles à l'empâtage : la suite du process est compromise, quel que soit le style visé." }
+  ]
+},
+{
+  id:'empatage', eyebrow:"Étape 3 · Empâtage",
+  title:"Choix du programme d'eaux à l'empâtage",
+  prompt:"Le malt concassé (grist) est mélangé à de l'eau chaude dans la cuve-matière (mash tun) pour convertir l'amidon en sucres. Le choix des températures d'eau est déterminant, quelle que soit la catégorie de whisky visée.",
+  options:[
+    { id:'a', label:"Trois eaux successives : 63-65 °C, puis ≈75 °C, puis ≈90 °C", detail:"Protocole classique de brasserie de whisky.",
+      points:U(3), critical:U(false),
+      fb:"Protocole exemplaire : la première eau à 63-65 °C active les enzymes pour convertir l'amidon en sucres (le moût, ou « wort »), les eaux suivantes plus chaudes achèvent l'extraction sans détruire le potentiel enzymatique." },
+    { id:'b', label:"Une seule eau à 100 °C pour tout extraire d'un coup", detail:"Approche « brutale » et rapide.",
+      points:U(0), critical:U(true),
+      fb:"Erreur technique : à 100 °C, les enzymes sont immédiatement détruites, la conversion de l'amidon est très incomplète et vous extrayez des tanins indésirables de l'enveloppe du grain." },
+    { id:'c', label:"Eau froide (≈20 °C)", detail:"Pour « préserver » les enzymes selon vous.",
+      points:U(0), critical:U(true),
+      fb:"Erreur technique : les enzymes ont besoin de chaleur (63-65 °C) pour être actives. À froid, l'amidon n'est pas converti en sucres : votre moût sera pauvre en sucres fermentescibles." },
+    { id:'d', label:"Trois eaux, mais toutes à 95 °C", detail:"Trois passages, température uniforme et élevée.",
+      points:U(1), critical:U(false),
+      fb:"Choix perfectible : une température uniformément trop élevée dès la première eau détruit une partie des enzymes avant qu'elles n'aient converti l'amidon, ce qui réduit le rendement en sucres." }
+  ]
+},
+{
+  id:'fermentation', eyebrow:"Étape 4 · Brassage & fermentation",
+  title:"Choix du protocole de fermentation",
+  prompt:"Le moût sucré (wort) est refroidi puis ensemencé en levures dans les cuves de fermentation (washbacks) pour produire le « wash », une bière brute titrant 7 à 9 % d'alcool. Protocole universel, indépendant du style final.",
+  options:[
+    { id:'a', label:"Refroidissement à ≈20 °C, levures de distillerie, fermentation courte (≈48 h)", detail:"Profil céréalier et malté.",
+      points:U(3), critical:U(false),
+      fb:"Protocole correct et classique : le refroidissement permet à la levure de travailler sans être détruite par la chaleur. Une fermentation courte privilégie les notes céréalières et maltées." },
+    { id:'b', label:"Refroidissement à ≈20 °C, fermentation longue (85-90 h) avec activité bactérienne secondaire", detail:"Profil fruité, notes d'esters.",
+      points:U(3), critical:U(false),
+      fb:"Protocole correct et tout aussi légitime : la fermentation longue laisse le temps à une activité lactique secondaire de se développer, générant des esters responsables de notes fruitées complexes." },
+    { id:'c', label:"Ajout des levures directement dans le moût à 90 °C", detail:"Sans refroidissement préalable.",
+      points:U(0), critical:U(true),
+      fb:"Erreur technique majeure : à 90 °C, les levures sont immédiatement détruites par la chaleur. Aucune fermentation ne peut avoir lieu, donc pas de production d'alcool." },
+    { id:'d', label:"Fermentation très courte (≈10 h)", detail:"Pour accélérer la cadence de production.",
+      points:U(1), critical:U(false),
+      fb:"Choix perfectible : la fermentation est incomplète, le degré alcoolique du wash reste faible et le profil aromatique peu développé, ce qui pénalisera la distillation." }
+  ]
+},
+{
+  id:'distillation', eyebrow:"Étape 5 · Distillation",
+  title:"Choix de l'appareil et du protocole de distillation",
+  prompt:"Le wash est distillé pour concentrer l'alcool et sélectionner les composés aromatiques. Le choix de l'appareil — et sa cohérence avec le style choisi à l'étape 1 — est ici décisif.",
+  options:[
+    { id:'a', label:"Alambic à repasse (pot still) en cuivre, double distillation, coupe précise du cœur (≈68-70 % vol.)", detail:"Wash still puis spirit still.",
+      points:{scotch_single_malt:3, scotch_single_grain:0, scotch_blended_malt:3, scotch_blended:3, irish_pot_still:2},
+      critical:{scotch_single_malt:false, scotch_single_grain:true, scotch_blended_malt:false, scotch_blended:false, irish_pot_still:false},
+      fb:{
+        scotch_single_malt:"Protocole de référence du Single Malt écossais : double distillation en alambic de cuivre, avec une coupe rigoureuse ne conservant que le « cœur » de chauffe, exempt de composés indésirables des têtes et des queues.",
+        scotch_single_grain:"Non conforme : un Single Grain doit être distillé « autrement qu'en alambic à repasse », c'est-à-dire en colonne continue. Distillé en pot still, ce produit ne serait plus légalement un Single Grain.",
+        scotch_blended_malt:"Protocole conforme : chaque Single Malt entrant dans un Blended Malt doit être produit en alambic à repasse, exactement comme ici.",
+        scotch_blended:"Choix conforme : vous produisez ici la composante « malt » de votre futur Blended Scotch Whisky, avec un protocole irréprochable.",
+        irish_pot_still:"Techniquement irréprochable et légal, mais la double distillation est moins caractéristique du style Pot Still irlandais, traditionnellement triple-distillé pour plus de légèreté."
+      } },
+    { id:'b', label:"Alambic à repasse en cuivre, triple distillation, coupe précise du cœur", detail:"Trois passages successifs.",
+      points:{scotch_single_malt:2, scotch_single_grain:0, scotch_blended_malt:2, scotch_blended:2, irish_pot_still:3},
+      critical:{scotch_single_malt:false, scotch_single_grain:true, scotch_blended_malt:false, scotch_blended:false, irish_pot_still:false},
+      fb:{
+        scotch_single_malt:"Techniquement correct et légal (quelques distilleries comme Auchentoshan le pratiquent), mais la triple distillation reste minoritaire pour un Single Malt, dont la référence est la double distillation.",
+        scotch_single_grain:"Non conforme, pour la même raison qu'un alambic double : un Single Grain doit être distillé en colonne continue, jamais en alambic à repasse, quel que soit le nombre de passages.",
+        scotch_blended_malt:"Correct et légal, mais atypique : la triple distillation reste minoritaire parmi les Single Malts composant un Blended Malt.",
+        scotch_blended:"Choix conforme mais atypique pour la composante malt d'un Blended Scotch Whisky, la double distillation restant la référence.",
+        irish_pot_still:"C'est la signature historique du Pot Still Irish Whiskey : la triple distillation affine le distillat et lui donne son profil onctueux et léger caractéristique."
+      } },
+    { id:'c', label:"Colonne à distiller continue (Coffey still)", detail:"Distillation continue, haut degré de rectification.",
+      points:{scotch_single_malt:0, scotch_single_grain:3, scotch_blended_malt:0, scotch_blended:3, irish_pot_still:0},
+      critical:{scotch_single_malt:true, scotch_single_grain:false, scotch_blended_malt:true, scotch_blended:false, irish_pot_still:true},
+      fb:{
+        scotch_single_malt:"Non conforme : la colonne produit un grain whisky, très rectifié et neutre. Un Single Malt doit obligatoirement être distillé en alambic à repasse (pot still) dans la distillerie qui l'embouteille.",
+        scotch_single_grain:"Protocole de référence : la distillation continue en colonne (Coffey still) est justement ce qui définit légalement le Single Grain, par opposition au malt whisky.",
+        scotch_blended_malt:"Non conforme : un Blended Malt n'est composé que de Single Malts, eux-mêmes obligatoirement distillés en alambic à repasse. La colonne exclurait ce whisky de la catégorie.",
+        scotch_blended:"Choix conforme : vous produisez ici la composante « grain » de votre futur Blended Scotch Whisky, distillée en colonne comme il se doit.",
+        irish_pot_still:"Non conforme pour un Pot Still : la colonne caractérise le grain whiskey (souvent destiné aux blends), pas le style pot still qui exige un alambic traditionnel."
+      } },
+    { id:'d', label:"Alambic à repasse, sans effectuer de coupe (on conserve tout le distillat)", detail:"Têtes, cœur et queues mélangés.",
+      points:U(0), critical:U(true),
+      fb:{
+        scotch_single_malt:"Erreur technique grave : sans coupe, vous conservez les « têtes » (composés volatils indésirables, acétone, parfois traces de méthanol) et les « queues » (huiles lourdes, notes désagréables). Le distillat est impropre à une bonne maturation.",
+        scotch_single_grain:"Même erreur grave, quelle que soit la catégorie : l'absence de coupe compromet la pureté du distillat, en plus de ne pas correspondre au principe même de la distillation continue.",
+        scotch_blended_malt:"Erreur technique grave : chaque Single Malt de l'assemblage doit provenir d'une coupe rigoureuse, sous peine de contaminer tout le futur Blended Malt.",
+        scotch_blended:"Erreur technique grave : un distillat sans coupe compromet la qualité de la composante malt (ou grain) qui entrera dans l'assemblage final.",
+        irish_pot_still:"Même erreur grave : l'absence de coupe compromet la pureté et la qualité aromatique du nouveau distillat ( new make spirit )."
+      } }
+  ]
+},
+{
+  id:'maturation', eyebrow:"Étape 6 · Maturation",
+  title:"Choix du fût et de la durée d'élevage",
+  prompt:"Le nouveau distillat (new make spirit) est logé en fût de chêne pour sa maturation. La réglementation impose un minimum légal de 3 ans en Écosse comme en Irlande pour l'appellation « whisky/whiskey », quel que soit le style.",
+  options:[
+    { id:'a', label:"Fût de chêne ex-bourbon américain, 3 ans minimum", detail:"Notes de vanille, coco, épices douces.",
+      points:U(3), critical:U(false),
+      fb:"Choix conforme et très répandu : le chêne américain, déjà utilisé pour le bourbon, apporte vanille, noix de coco et épices douces. Durée légale respectée." },
+    { id:'b', label:"Fût de chêne ex-xérès (sherry), 3 ans minimum", detail:"Notes de fruits secs, épices, raisin.",
+      points:U(3), critical:U(false),
+      fb:"Choix conforme et emblématique de nombreux Speyside : le chêne européen ayant contenu du xérès apporte fruits secs, épices et une robe plus sombre. Durée légale respectée." },
+    { id:'c', label:"Cuve inox, 3 ans", detail:"Pas de contact avec le bois.",
+      points:U(0), critical:U(true),
+      fb:"Non conforme : sans fût de chêne, il n'y a ni maturation, ni échange avec le bois (tanins, couleur, arômes). La réglementation impose un vieillissement en fût de chêne : ce produit ne peut pas être qualifié de whisky." },
+    { id:'d', label:"Fût de chêne neuf, 8 mois seulement", detail:"Bois vierge, élevage court.",
+      points:U(0), critical:U(true),
+      fb:"Non conforme : la durée minimale légale de maturation est de 3 ans. À 8 mois, le produit ne peut pas être commercialisé sous l'appellation whisky/whiskey, quelle que soit la qualité du fût." }
+  ]
+},
+{
+  id:'dilution', eyebrow:"Étape 7 · Réduction & mise en bouteille",
+  title:"Choix de la dilution finale",
+  prompt:"Le whisky sort de fût à un degré souvent élevé (55-65 % vol.). Il doit être ramené au degré de commercialisation avec de l'eau adoucie ou déminéralisée — sans jamais descendre sous le minimum légal de 40 % vol.",
+  options:[
+    { id:'a', label:"Réduction jusqu'à 40 % vol.", detail:"Degré minimum légal, profil léger.",
+      points:U(3), critical:U(false),
+      fb:"Choix conforme : 40 % est le degré minimum légal pour l'appellation whisky, très répandu commercialement pour un profil accessible." },
+    { id:'b', label:"Réduction jusqu'à 46 % vol., non filtré à froid", detail:"Texture plus riche, arômes préservés.",
+      points:U(3), critical:U(false),
+      fb:"Choix conforme et qualitatif : à 46 % et sans filtration à froid, les acides gras et esters aromatiques ne sont pas retirés, offrant une texture et une intensité aromatique supérieures." },
+    { id:'c', label:"Mise en bouteille « cask strength », sans dilution (≈58-65 % vol.)", detail:"Degré brut de fût.",
+      points:U(3), critical:U(false),
+      fb:"Choix conforme et prisé des connaisseurs : aucune eau ajoutée, le whisky exprime toute l'intensité du fût. Un grand classique des éditions « cask strength »." },
+    { id:'d', label:"Réduction jusqu'à 35 % vol.", detail:"Pour « adoucir » davantage le produit.",
+      points:U(0), critical:U(true),
+      fb:"Non conforme : en dessous de 40 % vol., le produit ne peut plus légalement être qualifié de whisky. La dilution a été poussée trop loin." }
+  ]
+}
+];
+
+// Helper: builds a {styleKey: value, ...} object with the same value for all 5 styles.
+function U(v){
+  return {
+    scotch_single_malt:v, scotch_single_grain:v, scotch_blended_malt:v, scotch_blended:v, irish_pot_still:v
+  };
+}
+// Normalize fb fields: some are plain strings (universal steps), some are per-style objects.
+function fbFor(opt, styleKey){
+  return typeof opt.fb === 'string' ? opt.fb : opt.fb[styleKey];
+}
+
+const MAX_SCORE = STEPS.length * 3;
+
+/* ============ STATE ============ */
+let state = {
+  screen:'start',
+  name:'',
+  style:null,
+  region:null,
+  currentStep:0,
+  answers:{}, // stepId -> optionId
+  locked:{}
+};
+
+/* ============ HELPERS ============ */
+function totalScore(){
+  let s=0;
+  STEPS.forEach(step=>{
+    const ans = state.answers[step.id];
+    if(ans){
+      const opt = step.options.find(o=>o.id===ans);
+      s += opt.points[state.style];
+    }
+  });
+  return s;
+}
+function hasCritical(){
+  return STEPS.some(step=>{
+    const ans = state.answers[step.id];
+    if(!ans) return false;
+    const opt = step.options.find(o=>o.id===ans);
+    return opt.critical[state.style];
+  });
+}
+function tierFor(score){
+  if(score>=19) return {name:"Maître Distillateur", note:"Un travail d'une précision remarquable : chaque choix respecte la technique et la réglementation en vigueur."};
+  if(score>=14) return {name:"Distillateur Confirmé", note:"Un très bon niveau de maîtrise, avec quelques choix perfectibles à retravailler."};
+  if(score>=8) return {name:"Apprenti Distillateur", note:"Les bases sont là, mais plusieurs étapes techniques méritent d'être revues avant embouteillage."};
+  return {name:"À refaire — retour à l'alambic", note:"Trop d'erreurs techniques ou réglementaires compromettent ce whisky. Reprenez chaque étape avec attention."};
+}
+function currentRegion(){
+  if(!state.region) return null;
+  return state.region==='irish' ? IRISH_REGION : REGIONS[state.region];
+}
+
+function tastingProfile(){
+  const tags = [];
+  const reg = currentRegion();
+  if(reg) tags.push(...reg.tags);
+
+  const peat = state.answers['maltage'];
+  const peatMap = {a:"non tourbé", b:"légèrement fumé", c:"fortement tourbé, iodé", d:null};
+  if(peat && peatMap[peat]) tags.push(peatMap[peat]);
+
+  const ferm = state.answers['fermentation'];
+  const fermMap = {a:"céréalier, malté", b:"fruité, esters complexes", c:null, d:"profil peu développé"};
+  if(ferm && fermMap[ferm]) tags.push(fermMap[ferm]);
+
+  const cask = state.answers['maturation'];
+  const caskMap = {a:"vanille, coco, épices douces", b:"fruits secs, épices, xérès", c:null, d:null};
+  if(cask && caskMap[cask]) tags.push(caskMap[cask]);
+
+  const dil = state.answers['dilution'];
+  const dilMap = {a:"40 % — profil léger", b:"46 % non filtré à froid — texture riche", c:"cask strength — intensité maximale", d:null};
+  if(dil && dilMap[dil]) tags.push(dilMap[dil]);
+
+  return tags;
+}
+
+/* ============ RENDER ============ */
+const mainCard = document.getElementById('mainCard');
+
+function render(){
+  updateSidebar();
+  if(state.screen==='start') renderStart();
+  else if(state.screen==='step') renderStep();
+  else if(state.screen==='result') renderResult();
+}
+
+function updateSidebar(){
+  const total = STEPS.length;
+  let doneCount = 0;
+  STEPS.forEach(s=>{ if(state.answers[s.id]) doneCount++; });
+  const progressPct = state.screen==='start' ? 0 : Math.round((doneCount/total)*100);
+  document.getElementById('progLabel').textContent = progressPct+'%';
+  document.getElementById('progFill').style.width = progressPct+'%';
+
+  const score = state.screen==='start' ? 0 : totalScore();
+  document.getElementById('scoreLabel').textContent = score+' / '+MAX_SCORE;
+  document.getElementById('scoreFill').style.width = Math.round((score/MAX_SCORE)*100)+'%';
+
+  const fillPct = state.screen==='start' ? 0 : score/MAX_SCORE;
+  const totalHeight = 200;
+  const fillHeight = fillPct*totalHeight;
+  const liquid = document.getElementById('liquidFill');
+  liquid.setAttribute('y', 260-fillHeight);
+  liquid.setAttribute('height', fillHeight);
+
+  const dotsWrap = document.getElementById('stepDots');
+  dotsWrap.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const div = document.createElement('div');
+    let cls = 'step-dot';
+    if(state.screen==='step' && i===state.currentStep) cls+=' current';
+    else if(state.answers[s.id]) cls+=' done';
+    div.className = cls;
+    div.innerHTML = '<span class="pt"></span>'+ (i+1)+'. '+s.title;
+    dotsWrap.appendChild(div);
+  });
+
+  const regionLabel = currentRegion() ? (' · '+currentRegion().label) : '';
+  document.getElementById('learnerTag').innerHTML =
+    state.name ? ('Apprenti·e distillateur·rice — <b>'+escapeHtml(state.name)+'</b>'+(state.style?(' · '+STYLES[state.style].short):'')+regionLabel) : '';
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderStart(){
+  mainCard.className='card start';
+  const selectedStyle = state.style ? STYLES[state.style] : null;
+
+  let regionBlock = '';
+  if(selectedStyle && selectedStyle.family==='scotch'){
+    regionBlock = `
+    <div class="field wide">
+      <label>Région écossaise</label>
+      <div class="choice-grid" id="regionChoice">
+        ${Object.values(REGIONS).map(r=>`
+          <button type="button" class="choice-card ${state.region===r.key?'selected':''}" data-region="${r.key}">
+            <div class="tagline">${r.tagline}</div>
+            <h3>${r.label}</h3>
+            <p>${r.desc}</p>
+          </button>
+        `).join('')}
+      </div>
+    </div>`;
+  } else if(selectedStyle && selectedStyle.family==='irish'){
+    regionBlock = `
+    <div class="info-note">
+      <b>${IRISH_REGION.label}</b> — ${IRISH_REGION.desc}
+    </div>`;
+  }
+
+  mainCard.innerHTML = `
+    <div class="eyebrow">Avant de commencer</div>
+    <div class="display" style="font-family:'Fraunces',serif; font-weight:700; color:var(--barley); margin:6px 0 12px;">Élaborez votre whisky, étape par étape</div>
+    <p class="lede">Vous allez traverser les sept étapes de l'élaboration d'un whisky, du choix de la céréale à la mise en bouteille. À chaque étape, faites le choix technique qui vous semble le plus juste : vous recevrez une explication immédiate et une note. À la fin, vous obtiendrez le profil de dégustation et le verdict de votre whisky.</p>
+
+    <div class="field">
+      <label for="nameInput">Votre nom (pour le cahier)</label>
+      <input type="text" id="nameInput" placeholder="Prénom NOM" value="${escapeHtml(state.name)}">
+    </div>
+
+    <div class="field wide">
+      <label>Style de whisky à élaborer</label>
+      <div class="choice-grid" id="styleChoice">
+        ${Object.values(STYLES).map(s=>`
+          <button type="button" class="choice-card ${state.style===s.key?'selected':''}" data-style="${s.key}">
+            <h3>${s.label}</h3>
+            <p>${s.desc}</p>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    ${regionBlock}
+
+    <div class="step-footer" style="justify-content:flex-end;">
+      <button class="btn" id="startBtn" ${canStart()?'':'disabled'}>Commencer l'élaboration →</button>
+    </div>
+  `;
+
+  document.getElementById('nameInput').addEventListener('input', e=>{
+    state.name = e.target.value;
+    updateSidebar();
+  });
+  document.querySelectorAll('#styleChoice .choice-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const newStyle = btn.dataset.style;
+      const newFamily = STYLES[newStyle].family;
+      const oldFamily = state.style ? STYLES[state.style].family : null;
+      state.style = newStyle;
+      if(newFamily==='irish'){
+        state.region = 'irish';
+      } else if(newFamily !== oldFamily){
+        state.region = null;
+      }
+      renderStart();
+    });
+  });
+  const regionWrap = document.getElementById('regionChoice');
+  if(regionWrap){
+    regionWrap.querySelectorAll('.choice-card').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.region = btn.dataset.region;
+        renderStart();
+      });
+    });
+  }
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    if(!canStart()) return;
+    state.screen='step';
+    state.currentStep=0;
+    render();
+  });
+}
+
+function canStart(){
+  if(!state.style) return false;
+  const fam = STYLES[state.style].family;
+  if(fam==='irish') return true;
+  return !!state.region;
+}
+
+function renderStep(){
+  const step = STEPS[state.currentStep];
+  const answered = state.answers[step.id];
+  mainCard.className='card';
+
+  const optionsHtml = step.options.map(opt=>{
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(opt.id===answered){
+        const pts = opt.points[state.style];
+        cls += pts===3?' correct': pts===0?' wrong':' partial';
+      } else {
+        cls+=' dim';
+      }
+    }
+    return `<button type="button" class="${cls}" data-opt="${opt.id}" ${answered?'disabled':''}>
+      <span class="letter">${opt.id.toUpperCase()}</span>
+      <span class="txt"><b>${opt.label}</b><span>${opt.detail}</span></span>
+    </button>`;
+  }).join('');
+
+  let feedbackHtml = '';
+  if(answered){
+    const opt = step.options.find(o=>o.id===answered);
+    const pts = opt.points[state.style];
+    const tier = pts===3?3: pts===0?0:1;
+    const tierLabel = tier===3?'Choix optimal':tier===0?'Erreur technique / non conforme':'Choix perfectible';
+    feedbackHtml = `<div class="feedback tier-${tier}">
+      <div class="fb-title">${tierLabel} · ${pts} / 3 point${pts>1?'s':''}</div>
+      <div>${fbFor(opt, state.style)}</div>
+    </div>`;
+  }
+
+  const isLast = state.currentStep === STEPS.length-1;
+
+  mainCard.innerHTML = `
+    <div class="eyebrow">${step.eyebrow} · ${STYLES[state.style].short}</div>
+    <div class="step-title">${step.title}</div>
+    <div class="step-prompt">${step.prompt}</div>
+    <div class="options">${optionsHtml}</div>
+    ${feedbackHtml}
+    <div class="step-footer">
+      <div class="step-score">Score cumulé : <b>${totalScore()}</b> / ${MAX_SCORE}</div>
+      <div style="display:flex; gap:10px;">
+        ${state.currentStep>0 ? `<button class="btn ghost" id="prevBtn">← Précédent</button>` : ''}
+        <button class="btn" id="nextBtn" ${answered?'':'disabled'}>${isLast? 'Voir le résultat →' : 'Étape suivante →'}</button>
+      </div>
+    </div>
+  `;
+
+  if(!answered){
+    document.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.answers[step.id] = btn.dataset.opt;
+        renderStep();
+      });
+    });
+  }
+  const prevBtn = document.getElementById('prevBtn');
+  if(prevBtn) prevBtn.addEventListener('click', ()=>{
+    state.currentStep--;
+    render();
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(!state.answers[step.id]) return;
+    if(isLast){
+      state.screen='result';
+    } else {
+      state.currentStep++;
+    }
+    render();
+  });
+  updateSidebar();
+}
+
+function renderResult(){
+  const score = totalScore();
+  const tier = tierFor(score);
+  const critical = hasCritical();
+  const tags = tastingProfile();
+  const reg = currentRegion();
+
+  const recapHtml = STEPS.map(step=>{
+    const ans = state.answers[step.id];
+    const opt = step.options.find(o=>o.id===ans);
+    const isCrit = opt.critical[state.style];
+    return `<div class="recap-item">
+      <span class="k">${step.title}</span>
+      <span class="v ${isCrit?'crit':''}">${opt.label} (${opt.points[state.style]}/3)</span>
+    </div>`;
+  }).join('');
+
+  const regionRow = reg ? `<div class="recap-item">
+      <span class="k">Région</span>
+      <span class="v">${reg.label}</span>
+    </div>` : '';
+
+  mainCard.className='card';
+  mainCard.innerHTML = `
+    <div class="result-head">
+      <div class="eyebrow">Verdict final · ${STYLES[state.style].label}${reg?(' · '+reg.label):''}</div>
+      <div class="result-tier">${tier.name}</div>
+      <div class="result-score mono">${score} / ${MAX_SCORE} points</div>
+      <p style="max-width:60ch; margin:14px auto 0; color:var(--parchment-dim); line-height:1.6;">${tier.note}</p>
+    </div>
+
+    ${critical ? `<div class="warning-banner"><b>⚠ Non conforme à la réglementation.</b> Un ou plusieurs choix critiques (marqués en rouge dans le récapitulatif) rendent ce produit impropre à l'appellation « ${STYLES[state.style].label} » en l'état — indépendamment du score obtenu.</div>` : ''}
+
+    <div class="certificate">
+      <h3>Fiche technique — ${escapeHtml(state.name)||'Apprenti·e distillateur·rice'}</h3>
+      <div class="recap-grid">${regionRow}${recapHtml}</div>
+
+      <div class="tasting">
+        <div class="fb-title">Profil de dégustation obtenu</div>
+        <div class="tags">
+          ${tags.length ? tags.map(t=>`<span class="tag">${t}</span>`).join('') : `<span class="tag">Profil non déterminé — trop d'erreurs techniques</span>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn ghost" id="printBtn">Imprimer la fiche</button>
+      <button class="btn" id="restartBtn">Recommencer</button>
+    </div>
+  `;
+
+  document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('restartBtn').addEventListener('click', ()=>{
+    state = {screen:'start', name:state.name, style:null, region:null, currentStep:0, answers:{}, locked:{}};
+    render();
+  });
+  updateSidebar();
+}
+
+render();
+</script>
+</body>
+</html>
